@@ -2,7 +2,31 @@ require 'base64'
 
 module Liqpay
   class Request < BaseOperation
-    attr_accessor :result_url, :server_url, :order_id, :amount, :currency, :description, :default_phone, :pay_way, :goods_id, :exp_time
+    # REQUIRED Amount of payment (Float), in :currency
+    attr_accessor :amount
+    # REQUIRED Currency of payment - one of `Liqpay::SUPPORTED_CURRENCIES`
+    attr_accessor :currency
+    # REQUIRED Arbitrary but unique ID
+    attr_accessor :order_id
+    # RECOMMENDED URL that the user will be redirected to after payment
+    attr_accessor :result_url
+    # RECOMMENDED URL that'll receive the order details in the background.
+    attr_accessor :server_url
+    # RECOMMENDED Description to be displayed to the user
+    attr_accessor :description
+    # Phone number to be suggested to the user
+    #
+    # LiqPAY requires users to provide a phone number before payment.
+    # If you know the user's phone number, you can provide it so he
+    # doesn't have to enter it manually.
+    attr_accessor :default_phone
+    # Method of payment. One or more (comma-separated) of:
+    #   card - by card
+    #   liqpay - by liqpay account
+    attr_accessor :pay_way
+
+    attr_accessor :exp_time
+    attr_accessor :goods_id
 
     def initialize(options={})
       super(options)

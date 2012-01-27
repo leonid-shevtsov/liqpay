@@ -8,9 +8,27 @@ module Liqpay
     attr_reader :encoded_xml, :signature, :xml
 
     ATTRIBUTES = %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count)
-    ATTRIBUTES.each do |attr|
+    %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count).each do |attr|
       attr_reader attr
     end
+
+    # Amount of payment. MUST match the requested amount
+    attr_reader :amount
+    # Currency of payment. MUST match the requested currency
+    attr_reader :currency
+    # Status of payment. One of '
+    #   failure 
+    #   success
+    #   wait_secure - success, but the card wasn't known to the system 
+    attr_reader :status
+    # Error code
+    attr_reader :code
+    # LiqPAY's internal transaction ID
+    attr_reader :transaction_id
+    # Chosen method of payment
+    attr_reader :pay_way
+    # Payer's phone
+    attr_reader :sender_phone
 
     def initialize(options = {})
       super(options)
@@ -21,6 +39,7 @@ module Liqpay
       decode!
     end
 
+    # Returns true, if the transaction was successful
     def success?
       SUCCESS_STATUSES.include? self.status
     end

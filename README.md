@@ -119,6 +119,6 @@ That's about it.
 * check that the order id is valid;
 * check that the order isn't completed yet (to avoid replay attacks); 
 
-~~~
+- - -
 
 2012 Leonid Shevtsov
