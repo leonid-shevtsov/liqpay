@@ -24,15 +24,13 @@ provided by LiqPAY when you sign up.
 
 2. Users completes payment through LiqPAY.
 
-3. If the payment was a success: LiqPAY redirects the user to the URL you specified.
+3. LiqPAY redirects the user to the URL you specified.
 
 4. You validate the response against your secret signature.
 
-5. You process the payment on your side.
+5. If the payment was successful: You process the payment on your side.
 
-6. If the payment was cancelled: LiqPAY redirects the user to the (other) URL you specified.
-
-7. You cancel the payment on your side. 
+6. If the payment was cancelled: You cancel the operation.
 
 So, LiqPAY is pretty simple, it does no server-to-server validation, just a
 browser-driven flow.
@@ -78,7 +76,7 @@ browser-driven flow.
 
     Or:
 
-        <%=liqpay_button @liqpay_request "Pay now!" %>
+        <%=liqpay_button @liqpay_request, :title => "Pay now!" %>
 
     Or:
 

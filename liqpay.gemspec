@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = Liqpay::VERSION
   s.authors     = ["Leonid Shevtsov"]
   s.email       = ["leonid@shevtsov.me"]
-  s.homepage    = "http://leonid.shevtsov.me/en/liqpay"
+  s.homepage    = "https://github.com/leonid-shevtsov/liqpay"
   s.summary     = %q{LiqPAY billing API implementation in Ruby}
   s.description = %q{LiqPAY billing API implementation in Ruby}
 
