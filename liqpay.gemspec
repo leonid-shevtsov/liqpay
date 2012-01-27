@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.description = %q{LiqPAY billing API implementation in Ruby}
 
   s.add_dependency 'nokogiri'
+  s.add_development_dependency 'rake'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
