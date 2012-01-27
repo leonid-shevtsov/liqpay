@@ -2,9 +2,11 @@ require 'liqpay/version'
 require 'liqpay/request'
 require 'liqpay/response'
 
+require 'liqpay/railtie' if defined?(Rails)
+
 module Liqpay
-  API_VERSION = '1.2'
-  ENDPOINT_URL = 'https://www.liqpay.com/?do=clickNbuy'
+  LIQBUY_API_VERSION = '1.2'
+  LIQBUY_ENDPOINT_URL = 'https://www.liqpay.com/?do=clickNbuy'
   SUPPORTED_CURRENCIES = %w(UAH USD EUR RUR)
 
   @default_options = {}

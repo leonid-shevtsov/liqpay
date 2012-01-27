@@ -3,6 +3,8 @@ require 'nokogiri'
 
 module Liqpay
   class Response < BaseOperation
+    SUCCESS_STATUSES = %w(success wait_secure)
+
     attr_reader :encoded_xml, :signature, :xml
 
     ATTRIBUTES = %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count)
@@ -17,6 +19,10 @@ module Liqpay
       @signature = options[:signature]
 
       decode!
+    end
+
+    def success?
+      SUCCESS_STATUSES.include? self.status
     end
 
   private

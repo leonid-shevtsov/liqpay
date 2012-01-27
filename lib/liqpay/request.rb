@@ -36,7 +36,7 @@ module Liqpay
       validate! unless @kamikaze
       Nokogiri::XML::Builder.new { |xml|
         xml.request {
-          xml.version Liqpay::API_VERSION
+          xml.version Liqpay::LIQBUY_API_VERSION
           xml.merchant_id merchant_id
           xml.result_url result_url
           xml.server_url server_url
