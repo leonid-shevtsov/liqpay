@@ -1,4 +1,5 @@
 require 'base64'
+require 'liqpay/base_operation'
 
 module Liqpay
   class Request < BaseOperation

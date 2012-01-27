@@ -1,5 +1,6 @@
 require 'base64'
 require 'nokogiri'
+require 'liqpay/base_operation'
 
 module Liqpay
   class Response < BaseOperation
