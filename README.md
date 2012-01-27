@@ -70,17 +70,17 @@ browser-driven flow.
 
 2. Put a payment button somewhere
 
-As you need to make a POST request, there is definitely going to be a form somewhere. 
+    As you need to make a POST request, there is definitely going to be a form somewhere. 
 
-To output a form consisting of a single "Pay with LiqPAY" button, do
+    To output a form consisting of a single "Pay with LiqPAY" button, do
 
         <%=liqpay_button @liqpay_request %>
 
-Or:
+    Or:
 
         <%=liqpay_button @liqpay_request "Pay now!" %>
 
-Or:
+    Or:
 
         <%=liqpay_button @liqpay_request do %>
           <%=link_to 'Pay now!', '#', :onclick => 'document.forms[0].submit();' %>
