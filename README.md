@@ -14,7 +14,7 @@ The recommended way is setting the `Liqpay.default_options` hash somewhere in
 your initializers.
 
 You MUST supply the `merchant_id` and `merchant_signature` options, that are
-provided by LiqPAY when you sign up.
+provided by LiqPAY when you sign up, on the [merchant details page](https://liqpay.com/?do=shop_access).
 
 ## Processing payments through Liq&Buy
 
