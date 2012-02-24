@@ -9,7 +9,7 @@ module Liqpay
     attr_reader :encoded_xml, :signature, :xml
 
     ATTRIBUTES = %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count)
-    %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count).each do |attr|
+    %w(merchant_id order_id description goods_id pays_count).each do |attr|
       attr_reader attr
     end
 
