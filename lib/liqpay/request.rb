@@ -29,6 +29,9 @@ module Liqpay
     attr_accessor :exp_time
     attr_accessor :goods_id
 
+    # Language
+    attr_accessor :language
+
     def initialize(options={})
       super(options)
       
@@ -41,6 +44,7 @@ module Liqpay
       @default_phone = options[:default_phone]
       @pay_way = options[:pay_way]
       @kamikaze = options[:kamikaze]
+      @language = options[:language]
     end
 
     def encoded_xml
@@ -71,6 +75,7 @@ module Liqpay
           xml.description description
           xml.default_phone default_phone
           xml.pay_way pay_way.is_a?(Array) ? pay_way.join(',') : pay_way
+          xml.language language.blank? ? 'RU' : language.upcase 
         }
       }.to_xml
     end

@@ -9,7 +9,7 @@ module Liqpay
     # options - currently accepts two options
     #   id - the ID of the form being created (`liqpay_form` by default)
     #   title - text on the submit button (`Pay with LiqPay` by default); not used if you pass in a block
-    def liqpay_button(liqpay_request, options={}, &block)
+    def liqpay_button(liqpay_request, options={}, &block)      
       id = options.fetch(:id, 'liqpay_form')
       title = options.fetch(:title, 'Pay with LiqPAY')
       content_tag(:form, :id => id, :action => Liqpay::LIQBUY_ENDPOINT_URL, :method => :post) do
