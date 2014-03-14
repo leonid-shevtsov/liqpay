@@ -1,47 +1,58 @@
 # LiqPAY
 
-This Ruby gem implements the [LiqPAY](http://liqpay.com) billing system.
+This Ruby gem implements the [LiqPAY](https://www.liqpay.com) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.com/doc).
 
-As of now it only covers the [Liq&Buy 1.2 API](https://liqpay.com/?do=pages&p=cnb12), which is used to accept credit card payments on your site.
+**Users of version 0.1.2 and earlier:** your version of the gem uses the older, deprecated LiqPAY API; you should migrate to v1.0.0, but it requires you to change configuration and set up a server callback endpoint, so it's not a trivial upgrade.
+
+## Demo
+
+There is a demo app at http://liqpay-demo.herokuapp.com, source at https://github.com/leonid-shevtsov/liqpay_demo
 
 ## Installation
 
-Include the [liqpay gem](https://rubygems.org/gems/liqpay) in your app.
+Include the [liqpay gem](https://rubygems.org/gems/liqpay) in your `Gemfile`:
+
+    gem 'liqpay', '~>1.0.0'
+
+The gem requries at least Ruby 1.9.
 
 ## Configuration
 
-The recommended way is setting the `Liqpay.default_options` hash somewhere in
+You can provide all of the payment options in the request object, but the recommended way is setting the `Liqpay.default_options` hash somewhere in
 your initializers.
 
-You MUST supply the `merchant_id` and `merchant_signature` options, that are
-provided by LiqPAY when you sign up, on the [merchant details page](https://liqpay.com/?do=shop_access).
+You should supply the `public_key` and `private_key` options, that are
+provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.com/admin/business):
 
-## Processing payments through Liq&Buy
+    # config/initializers/liqpay.rb
+    Liqpay.default_options = {
+        public_key: ENV['LIQPAY_PUBLIC_KEY'],
+        private_key: ENV['LIQPAY_PRIVATE_KEY'],
+        currency: 'UAH'
+    }
+
+
+## Processing payments through LiqPay
 
 ### General flow
 
-1. User initiates the payment process; you redirect him to LiqPAY via POST, providing necessary parameters to set up the payment's amount and description
+1. User initiates the payment process; you redirect him to LiqPAY via a POST form, providing necessary parameters such as the payment's amount, order id and description.
 
 2. Users completes payment through LiqPAY.
 
-3. LiqPAY redirects the user to the URL you specified.
+3. LiqPAY redirects the user to the URL you specified with GET.
 
-4. You validate the response against your secret signature.
+4. You wait for a callback that LiqPAY will POST to your designated `server_url`.
 
 5. If the payment was successful: You process the payment on your side.
 
 6. If the payment was cancelled: You cancel the operation.
 
-So, LiqPAY is pretty simple, it does no server-to-server validation, just a
-browser-driven flow.
+The most recent version of the LiqPAY API *requires* you to have a serverside endpoint, which makes it impossible to test it with a local address.
 
 ### Implementation in Rails 
 
-0. Configure Liqpay:
-
-        # config/initializers/liqpay.rb
-        Liqpay.default_options[:merchant_id] = 'MY_MERCHANT_ID'
-        Liqpay.default_options[:merchant_signature] = 'MY_MERCHANT_SIGNATURE'
+0. Configure Liqpay
 
 1. Create a `Liqpay::Request` object
 
@@ -54,18 +65,17 @@ browser-driven flow.
     string stored in the session, or whatever, but *it must be unique*.
 
         @liqpay_request = Liqpay::Request.new(
-          :amount => '999.99', 
-          :currency => 'UAH', 
-          :order_id => '123', 
-          :description => 'Some Product',
-          :result_url => liqpay_payment_url
+          amount: '999.99', 
+          currency: 'UAH', 
+          order_id: '123', 
+          description: 'Some Product',
+          result_url: order_url(@order),
+          server_url: liqpay_payment_url
         )
 
     **Note that this does not do anything permanent.** No saves to the database, no
     requests to LiqPAY.
     
-
-
 2. Put a payment button somewhere
 
     As you need to make a POST request, there is definitely going to be a form somewhere. 
@@ -76,12 +86,12 @@ browser-driven flow.
 
     Or:
 
-        <%=liqpay_button @liqpay_request, :title => "Pay now!" %>
+        <%=liqpay_button @liqpay_request, title: "Pay now!" %>
 
     Or:
 
         <%=liqpay_button @liqpay_request do %>
-          <%=link_to 'Pay now!', '#', :onclick => 'document.forms[0].submit();' %>
+          <%=link_to 'Pay now!', '#', onclick: 'document.forms[0].submit();' %>
         <% end %>
 
 3. Set up a receiving endpoint.
@@ -119,4 +129,4 @@ That's about it.
 
 - - -
 
-2012 Leonid Shevtsov
+Ruby implementation (c) 2012-2014 Leonid Shevtsov
