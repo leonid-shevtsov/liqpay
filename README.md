@@ -12,7 +12,9 @@ There is a demo app at http://liqpay-demo.herokuapp.com, source at https://githu
 
 Include the [liqpay gem](https://rubygems.org/gems/liqpay) in your `Gemfile`:
 
-    gem 'liqpay', '~>1.0.0'
+```ruby
+gem 'liqpay', '~>1.0.0'
+```
 
 The gem requries at least Ruby 1.9.
 
@@ -24,12 +26,14 @@ your initializers.
 You should supply the `public_key` and `private_key` options, that are
 provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.com/admin/business):
 
-    # config/initializers/liqpay.rb
-    Liqpay.default_options = {
-        public_key: ENV['LIQPAY_PUBLIC_KEY'],
-        private_key: ENV['LIQPAY_PRIVATE_KEY'],
-        currency: 'UAH'
-    }
+```ruby
+# config/initializers/liqpay.rb
+Liqpay.default_options = {
+    public_key: ENV['LIQPAY_PUBLIC_KEY'],
+    private_key: ENV['LIQPAY_PRIVATE_KEY'],
+    currency: 'UAH'
+}
+```
 
 
 ## Processing payments through LiqPay
@@ -64,14 +68,16 @@ The most recent version of the LiqPAY API *requires* you to have a serverside en
     model (I suggest that you should), pass its ID. If not, it can be a random
     string stored in the session, or whatever, but *it must be unique*.
 
-        @liqpay_request = Liqpay::Request.new(
-          amount: '999.99', 
-          currency: 'UAH', 
-          order_id: '123', 
-          description: 'Some Product',
-          result_url: order_url(@order),
-          server_url: liqpay_payment_url
-        )
+    ```ruby
+    @liqpay_request = Liqpay::Request.new(
+      amount: '999.99', 
+      currency: 'UAH', 
+      order_id: '123', 
+      description: 'Some Product',
+      result_url: order_url(@order),
+      server_url: liqpay_payment_url
+    )
+    ```
 
     **Note that this does not do anything permanent.** No saves to the database, no
     requests to LiqPAY.
@@ -82,42 +88,50 @@ The most recent version of the LiqPAY API *requires* you to have a serverside en
 
     To output a form consisting of a single "Pay with LiqPAY" button, do
 
-        <%=liqpay_button @liqpay_request %>
+    ```erb
+    <%=liqpay_button @liqpay_request %>
+    ```
 
     Or:
 
-        <%=liqpay_button @liqpay_request, title: "Pay now!" %>
+    ```erb
+    <%=liqpay_button @liqpay_request, title: "Pay now!" %>
+    ```
 
     Or:
 
-        <%=liqpay_button @liqpay_request do %>
-          <%=link_to 'Pay now!', '#', onclick: 'document.forms[0].submit();' %>
-        <% end %>
+    ```erb
+    <%=liqpay_button @liqpay_request do %>
+      <%=link_to 'Pay now!', '#', onclick: 'document.forms[0].submit();' %>
+    <% end %>
+    ```
 
 3. Set up a receiving endpoint.
-       
-        # config/routes.rb
-        post '/liqpay_payment' => 'payments#liqpay_payment'
 
-        # app/controllers/payments_controller.rb
-        class PaymentsController < ApplicationController
-          # Skipping forgery protection here is important
-          protect_from_forgery :except => :liqpay_payment
+    ```ruby       
+    # config/routes.rb
+    post '/liqpay_payment' => 'payments#liqpay_payment'
 
-          def liqpay_payment
-            @liqpay_response = Liqpay::Response.new(params)
+    # app/controllers/payments_controller.rb
+    class PaymentsController < ApplicationController
+      # Skipping forgery protection here is important
+      protect_from_forgery :except => :liqpay_payment
 
-            if @liqpay_response.success?
-              # check that order_id is valid
-              # check that amount matches
-              # handle success
-            else
-              # handle error
-            end
-          rescue Liqpay::InvalidResponse
-            # handle error
-          end
+      def liqpay_payment
+        @liqpay_response = Liqpay::Response.new(params)
+
+        if @liqpay_response.success?
+          # check that order_id is valid
+          # check that amount matches
+          # handle success
+        else
+          # handle error
         end
+      rescue Liqpay::InvalidResponse
+        # handle error
+      end
+    end
+    ```
 
 That's about it.
 
