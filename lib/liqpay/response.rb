@@ -30,7 +30,7 @@ module Liqpay
       ATTRIBUTES.each do |attribute|
         instance_variable_set "@#{attribute}", params[attribute]
       end
-      @request_signature = params[:signature]
+      @request_signature = params["signature"]
 
       decode!
     end
@@ -41,7 +41,7 @@ module Liqpay
     end
 
     def signature_fields
-      [private_key, amount, currency, public_key, order_id, type, description, status, transaction_id, sender_phone]
+      [amount, currency, public_key, order_id, type, description, status, transaction_id, sender_phone]
     end
 
   private
