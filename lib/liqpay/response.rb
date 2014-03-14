@@ -5,8 +5,8 @@ module Liqpay
   class Response < BaseOperation
     SUCCESS_STATUSES = %w(success wait_secure)
 
-    ATTRIBUTES = %w(public_key order_id amount currency description status transaction_id sender_phone)
-    %w(public_key order_id description).each do |attr|
+    ATTRIBUTES = %w(public_key order_id amount currency description type status transaction_id sender_phone)
+    %w(public_key order_id description type).each do |attr|
       attr_reader attr
     end
 
