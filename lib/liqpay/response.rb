@@ -1,15 +1,12 @@
 require 'base64'
-require 'nokogiri'
 require 'liqpay/base_operation'
 
 module Liqpay
   class Response < BaseOperation
     SUCCESS_STATUSES = %w(success wait_secure)
 
-    attr_reader :encoded_xml, :signature, :xml
-
-    ATTRIBUTES = %w(merchant_id order_id amount currency description status code transaction_id pay_way sender_phone goods_id pays_count)
-    %w(merchant_id order_id description goods_id pays_count).each do |attr|
+    ATTRIBUTES = %w(public_key order_id amount currency description status transaction_id sender_phone)
+    %w(public_key order_id description).each do |attr|
       attr_reader attr
     end
 
@@ -22,20 +19,18 @@ module Liqpay
     #   success
     #   wait_secure - success, but the card wasn't known to the system 
     attr_reader :status
-    # Error code
-    attr_reader :code
     # LiqPAY's internal transaction ID
     attr_reader :transaction_id
-    # Chosen method of payment
-    attr_reader :pay_way
     # Payer's phone
     attr_reader :sender_phone
 
-    def initialize(options = {})
+    def initialize(params = {}, options = {})
       super(options)
 
-      @encoded_xml = options[:operation_xml]
-      @signature = options[:signature]
+      ATTRIBUTES.each do |attribute|
+        instance_variable_set "@#{attribute}", params[attribute]
+      end
+      @request_signature = params[:signature]
 
       decode!
     end
@@ -45,18 +40,14 @@ module Liqpay
       SUCCESS_STATUSES.include? self.status
     end
 
+    def signature_fields
+      [private_key, amount, currency, public_key, order_id, type, description, status, transaction_id, sender_phone]
+    end
+
   private
     def decode!
-      @xml = Base64.decode64(@encoded_xml)
-      
-      if sign(@xml, @merchant_signature) != @signature
+      if signature != @request_signature
         raise Liqpay::InvalidResponse
-      end
-
-      doc = Nokogiri.XML(@xml)
-
-      ATTRIBUTES.each do |attr|
-        self.instance_variable_set('@'+attr, doc.at(attr).try(:content))
       end
     end
   end

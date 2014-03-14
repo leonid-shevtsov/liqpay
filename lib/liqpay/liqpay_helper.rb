@@ -12,8 +12,11 @@ module Liqpay
     def liqpay_button(liqpay_request, options={}, &block)
       id = options.fetch(:id, 'liqpay_form')
       title = options.fetch(:title, 'Pay with LiqPAY')
-      content_tag(:form, :id => id, :action => Liqpay::LIQBUY_ENDPOINT_URL, :method => :post) do
-        result = hidden_field_tag(:operation_xml, liqpay_request.encoded_xml)+hidden_field_tag(:signature, liqpay_request.signature)
+      content_tag(:form, :id => id, :action => Liqpay::LIQPAY_ENDPOINT_URL, :method => :post) do
+        result = liqpay_request.form_fields.map{|name, value|
+          hidden_field_tag(name, value)
+        }.join("\n").html_safe
+        
         if block_given?
           result += yield
         else

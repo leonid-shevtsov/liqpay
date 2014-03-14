@@ -5,9 +5,8 @@ require 'liqpay/response'
 require 'liqpay/railtie' if defined?(Rails)
 
 module Liqpay
-  LIQBUY_API_VERSION = '1.2'
-  LIQBUY_ENDPOINT_URL = 'https://www.liqpay.com/?do=clickNbuy'
-  SUPPORTED_CURRENCIES = %w(UAH USD EUR RUR)
+  LIQPAY_ENDPOINT_URL = 'https://www.liqpay.com/api/pay'
+  SUPPORTED_CURRENCIES = %w(UAH USD EUR RUB)
 
   @default_options = {}
   class << self; attr_accessor :default_options; end

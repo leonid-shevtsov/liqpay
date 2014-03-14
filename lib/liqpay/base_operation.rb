@@ -3,22 +3,26 @@ require 'base64'
 
 module Liqpay
   class BaseOperation
-    attr_accessor :merchant_id, :merchant_signature
+    attr_accessor :public_key, :private_key
 
     def initialize(options={})
       options.replace(Liqpay.default_options.merge(options))
 
-      @merchant_id = options[:merchant_id]
-      @merchant_signature = options[:merchant_signature]
+      @public_key = options[:public_key]
+      @private_key = options[:private_key]
     end
 
     def signature
-      @signature ||= sign(xml, @merchant_signature)
+      @signature ||= sign(signature_fields)
+    end
+
+    def signature_fields
+      raise NotImplementedError
     end
 
   private
-    def sign(xml, signature)
-      Base64.encode64(Digest::SHA1.digest(signature + xml + signature)).strip
+    def sign(fields)
+      Base64.encode64(Digest::SHA1.digest(@private_key + fields.join(''))).strip
     end
   end
 end
