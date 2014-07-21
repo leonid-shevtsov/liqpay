@@ -13,16 +13,14 @@ module Liqpay
       id = options.fetch(:id, 'liqpay_form')
       title = options.fetch(:title, 'Pay with LiqPAY')
       content_tag(:form, :id => id, :action => Liqpay::LIQPAY_ENDPOINT_URL, :method => :post) do
-        result = liqpay_request.form_fields.map{|name, value|
-          hidden_field_tag(name, value)
-        }.join("\n").html_safe
-        
-        if block_given?
-          result += yield
-        else
-          result += submit_tag(title, :name => nil)
+        liqpay_request.form_fields.each do |name, value|
+          concat hidden_field_tag(name, value)
         end
-        result
+        if block_given?
+          yield
+        else
+          concat submit_tag(title, :name => nil)
+        end
       end
     end
   end
