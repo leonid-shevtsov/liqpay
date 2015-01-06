@@ -3,7 +3,7 @@ require 'liqpay/base_operation'
 
 module Liqpay
   class Response < BaseOperation
-    SUCCESS_STATUSES = %w(success wait_secure)
+    SUCCESS_STATUSES = %w(success wait_lc wait_accept)
 
     ATTRIBUTES = %w(public_key order_id amount currency description type status transaction_id sender_phone)
     %w(public_key order_id description type).each do |attr|
@@ -17,7 +17,9 @@ module Liqpay
     # Status of payment. One of '
     #   failure 
     #   success
-    #   wait_secure - success, but the card wasn't known to the system 
+    #   wait_secure - payment is checking now. You'll receive an answer in server callback and it can be success or failure or even reversed
+    #   wait_accept - success, but DO NOT use your merchant before approval
+    #   wait_lc - specific status for letter of credit
     attr_reader :status
     # LiqPAY's internal transaction ID
     attr_reader :transaction_id
