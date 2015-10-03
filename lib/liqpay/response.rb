@@ -18,6 +18,7 @@ module Liqpay
     #   failure 
     #   success
     #   wait_secure - success, but the card wasn't known to the system 
+    #   sandbox
     attr_reader :status
     # LiqPAY's internal transaction ID
     attr_reader :transaction_id
