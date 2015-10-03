@@ -19,6 +19,8 @@ module Liqpay
     attr_accessor :type
     # OPTIONAL UI language - `ru` or `en`
     attr_accessor :language
+    # OPTIONAL test mode (1 - ON)
+    attr_accessor :sandbox 
 
     def initialize(options={})
       super(options)
@@ -31,6 +33,7 @@ module Liqpay
       @server_url = options[:server_url]
       @type = options[:type]
       @language = options[:language]
+      @sandbox = options[:sandbox]
       @kamikaze = options[:kamikaze]
     end
 
@@ -50,7 +53,8 @@ module Liqpay
         server_url: server_url,
         type: type,
         signature: signature,
-        language: language
+        language: language,
+        sandbox: sandbox
       }.reject{|k,v| v.nil?}
     end
 
