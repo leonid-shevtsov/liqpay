@@ -9,8 +9,6 @@ module Liqpay
     attr_accessor :currency
     # REQUIRED Description to be displayed to the user
     attr_accessor :description
-    # REQUIRED API version
-    attr_accessor :version
     # RECOMMENDED Arbitrary but unique ID (May be REQUIRED by LiqPay configuration)
     attr_accessor :order_id
     # RECOMMENDED URL that the user will be redirected to after payment
@@ -22,7 +20,7 @@ module Liqpay
     # OPTIONAL UI language - `ru` or `en`
     attr_accessor :language
     # OPTIONAL test mode (1 - ON)
-    attr_accessor :sandbox
+    attr_accessor :sandbox 
 
     def initialize(options={})
       super(options)
@@ -30,7 +28,6 @@ module Liqpay
       @amount = options[:amount]
       @currency = options[:currency]
       @description = options[:description]
-      @version = options[:version]
       @order_id = options[:order_id]
       @result_url = options[:result_url]
       @server_url = options[:server_url]
@@ -51,7 +48,6 @@ module Liqpay
         amount: amount,
         currency: currency,
         description: description,
-        version: version,
         order_id: order_id,
         result_url: result_url,
         server_url: server_url,
@@ -64,7 +60,7 @@ module Liqpay
 
   private
     def validate!
-      %w(public_key amount currency description version).each do |required_field|
+      %w(public_key amount currency description).each do |required_field|
         raise Liqpay::Exception.new(required_field + ' is a required field') unless self.send(required_field).to_s != ''
       end
 

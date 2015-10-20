@@ -3,7 +3,7 @@ require 'liqpay/base_operation'
 
 module Liqpay
   class Response < BaseOperation
-    SUCCESS_STATUSES = %w(success wait_secure)
+    SUCCESS_STATUSES = %w(success wait_secure sandbox)
 
     ATTRIBUTES = %w(public_key order_id amount currency description type status transaction_id sender_phone)
     %w(public_key order_id description type).each do |attr|
@@ -18,6 +18,7 @@ module Liqpay
     #   failure 
     #   success
     #   wait_secure - success, but the card wasn't known to the system 
+    #   sandbox
     attr_reader :status
     # LiqPAY's internal transaction ID
     attr_reader :transaction_id
