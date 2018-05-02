@@ -1,5 +1,7 @@
 # LiqPAY
 
+<a href='https://ko-fi.com/X8X19BQH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
 This Ruby gem implements the [LiqPAY](https://www.liqpay.com) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.com/doc).
 
 **Users of version 0.1.2 and earlier:** your version of the gem uses the older, deprecated LiqPAY API; you should migrate to >v1, but it requires you to change configuration and set up a server callback endpoint, so it's not a trivial upgrade.
@@ -35,30 +37,29 @@ Liqpay.default_options = {
 }
 ```
 
-
 ## Processing payments through LiqPay
 
 ### General flow
 
-1. User initiates the payment process; you redirect him to LiqPAY via a POST form, providing necessary parameters such as the payment's amount, order id and description.
+1.  User initiates the payment process; you redirect him to LiqPAY via a POST form, providing necessary parameters such as the payment's amount, order id and description.
 
-2. Users completes payment through LiqPAY.
+2.  Users completes payment through LiqPAY.
 
-3. LiqPAY redirects the user to the URL you specified with GET.
+3.  LiqPAY redirects the user to the URL you specified with GET.
 
-4. You wait for a callback that LiqPAY will POST to your designated `server_url`.
+4.  You wait for a callback that LiqPAY will POST to your designated `server_url`.
 
-5. If the payment was successful: You process the payment on your side.
+5.  If the payment was successful: You process the payment on your side.
 
-6. If the payment was cancelled: You cancel the operation.
+6.  If the payment was cancelled: You cancel the operation.
 
-The most recent version of the LiqPAY API *requires* you to have a serverside endpoint, which makes it impossible to test it with a local address.
+The most recent version of the LiqPAY API _requires_ you to have a serverside endpoint, which makes it impossible to test it with a local address.
 
 ### Implementation in Rails
 
-0. Configure Liqpay
+0.  Configure Liqpay
 
-1. Create a `Liqpay::Request` object
+1.  Create a `Liqpay::Request` object
 
     The required options are: the amount and currency of the payment, and an
     "order ID".
@@ -66,7 +67,7 @@ The most recent version of the LiqPAY API *requires* you to have a serverside en
     The "order ID" is just a random string that you will use to
     identify the payment after it has been completed. If you have an `Order`
     model (I suggest that you should), pass its ID. If not, it can be a random
-    string stored in the session, or whatever, but *it must be unique*.
+    string stored in the session, or whatever, but _it must be unique_.
 
     ```ruby
     @liqpay_request = Liqpay::Request.new(
@@ -82,7 +83,7 @@ The most recent version of the LiqPAY API *requires* you to have a serverside en
     **Note that this does not do anything permanent.** No saves to the database, no
     requests to LiqPAY.
 
-2. Put a payment button somewhere
+1.  Put a payment button somewhere
 
     As you need to make a POST request, there is definitely going to be a form somewhere.
 
@@ -106,7 +107,7 @@ The most recent version of the LiqPAY API *requires* you to have a serverside en
     <% end %>
     ```
 
-3. Set up a receiving endpoint.
+1.  Set up a receiving endpoint.
 
     ```ruby
     # config/routes.rb
@@ -141,6 +142,6 @@ That's about it.
 * check that the order id is valid;
 * check that the order isn't completed yet (to avoid replay attacks);
 
-- - -
+---
 
 Ruby implementation (c) 2012-2014 Leonid Shevtsov
