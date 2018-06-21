@@ -2,7 +2,7 @@
 
 <a href='https://ko-fi.com/X8X19BQH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-This Ruby gem implements the [LiqPAY](https://www.liqpay.com) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.com/doc).
+This Ruby gem implements the [LiqPAY](https://www.liqpay.ua) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.com/doc).
 
 **Users of version 0.1.2 and earlier:** your version of the gem uses the older, deprecated LiqPAY API; you should migrate to >v1, but it requires you to change configuration and set up a server callback endpoint, so it's not a trivial upgrade.
 
@@ -26,7 +26,7 @@ You can provide all of the payment options in the request object, but the recomm
 your initializers.
 
 You should supply the `public_key` and `private_key` options, that are
-provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.com/admin/business):
+provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.ua/admin/business):
 
 ```ruby
 # config/initializers/liqpay.rb
