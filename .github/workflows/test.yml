@@ -10,4 +10,4 @@ jobs:
       with:
         ruby-version: '3.1'
         bundler-cache: true
-    - run: rubocop
+    - run: bundle exec rubocop
