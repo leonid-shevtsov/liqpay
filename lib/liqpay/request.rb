@@ -1,8 +1,15 @@
+# frozen_string_literal: true
+
 require 'base64'
 require 'liqpay/base_operation'
 
 module Liqpay
-  class Request < BaseOperation
+  # Represends a request to the LiqPay API
+  class Request < SignedPayload
+    SIGNATURE_FIELDS = %i[amount currency public_key order_id type description result_url server_url].freeze
+    REQUEST_FIELDS = (SIGNATURE_FIELDS +  %i[language sandbox]).freeze
+    FORM_FIELDS = (REQUEST_FIELDS + %i[signature]).freeze
+
     # REQUIRED Amount of payment (Float), in :currency
     attr_accessor :amount
     # REQUIRED Currency of payment - one of `Liqpay::SUPPORTED_CURRENCIES`
@@ -20,61 +27,55 @@ module Liqpay
     # OPTIONAL UI language - `ru` or `en`
     attr_accessor :language
     # OPTIONAL test mode (1 - ON)
-    attr_accessor :sandbox 
+    attr_accessor :sandbox
 
-    def initialize(options={})
+    def initialize(options = {})
       super(options)
 
-      @amount = options[:amount]
-      @currency = options[:currency]
-      @description = options[:description]
-      @order_id = options[:order_id]
-      @result_url = options[:result_url]
-      @server_url = options[:server_url]
-      @type = options[:type]
-      @language = options[:language]
-      @sandbox = options[:sandbox]
+      REQUEST_FIELDS.each { |field| send("#{field}=", options[field]) }
       @kamikaze = options[:kamikaze]
     end
 
     def signature_fields
-      [amount, currency, public_key, order_id, type, description, result_url, server_url]
+      SIGNATURE_FIELDS.map { |field| send(field) }
     end
 
     def form_fields
       validate! unless @kamikaze
-      {
-        public_key: public_key,
-        amount: amount,
-        currency: currency,
-        description: description,
-        order_id: order_id,
-        result_url: result_url,
-        server_url: server_url,
-        type: type,
-        signature: signature,
-        language: language,
-        sandbox: sandbox
-      }.reject{|k,v| v.nil?}
+
+      FORM_FIELDS.map { |field| [field, send(field)] }.to_h.reject { |_k, v| v.nil? }
     end
 
-  private
+    private
+
     def validate!
-      %w(public_key amount currency description).each do |required_field|
-        raise Liqpay::Exception.new(required_field + ' is a required field') unless self.send(required_field).to_s != ''
+      validate_required_fields!
+      validate_currency!
+      validate_amount!
+    end
+
+    def validate_required_fields!
+      %w[public_key amount currency description].each do |required_field|
+        raise Liqpay::Exception, "#{required_field} is a required field" unless send(required_field).to_s != ''
       end
+    end
 
-      raise Liqpay::Exception.new('currency must be one of '+Liqpay::SUPPORTED_CURRENCIES.join(', ')) unless Liqpay::SUPPORTED_CURRENCIES.include?(currency)
+    def validate_currency!
+      return if Liqpay::SUPPORTED_CURRENCIES.include?(currency)
 
+      raise Liqpay::Exception, "currency must be one of #{Liqpay::SUPPORTED_CURRENCIES.join(', ')}"
+    end
+
+    def validate_amount!
       begin
-        self.amount = Float(self.amount)
+        self.amount = Float(amount)
       rescue ArgumentError, TypeError
-        raise Liqpay::Exception.new('amount must be a number')
+        raise Liqpay::Exception, 'amount must be a number'
       end
 
-      raise Liqpay::Exception.new('amount must be rounded to 2 decimal digits') unless self.amount.round(2) == self.amount
+      raise Liqpay::Exception, 'amount must be rounded to 2 decimal digits' unless amount.round(2) == amount
 
-      raise Liqpay::Exception.new('amount must be more than 0.01') unless amount > 0.01
+      raise Liqpay::Exception, 'amount must be more than 0.01' unless amount > 0.01
     end
   end
 end

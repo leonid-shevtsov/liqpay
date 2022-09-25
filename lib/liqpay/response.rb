@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 require 'base64'
 require 'liqpay/base_operation'
 
 module Liqpay
-  class Response < BaseOperation
-    SUCCESS_STATUSES = %w(success wait_secure sandbox)
+  # Represents a response from the LiqPay API.
+  class Response < SignedPayload
+    SUCCESS_STATUSES = %w[success wait_secure sandbox].freeze
 
-    ATTRIBUTES = %w(public_key order_id amount currency description type status transaction_id sender_phone)
-    %w(public_key order_id description type).each do |attr|
+    ATTRIBUTES = %w[public_key order_id amount currency description type status transaction_id sender_phone].freeze
+    %w[public_key order_id description type].each do |attr|
       attr_reader attr
     end
 
@@ -15,9 +18,9 @@ module Liqpay
     # Currency of payment. MUST match the requested currency
     attr_reader :currency
     # Status of payment. One of '
-    #   failure 
+    #   failure
     #   success
-    #   wait_secure - success, but the card wasn't known to the system 
+    #   wait_secure - success, but the card wasn't known to the system
     #   sandbox
     attr_reader :status
     # LiqPAY's internal transaction ID
@@ -31,25 +34,24 @@ module Liqpay
       ATTRIBUTES.each do |attribute|
         instance_variable_set "@#{attribute}", params[attribute]
       end
-      @request_signature = params["signature"]
+      @request_signature = params['signature']
 
       decode!
     end
 
     # Returns true, if the transaction was successful
     def success?
-      SUCCESS_STATUSES.include? self.status
+      SUCCESS_STATUSES.include? status
     end
 
     def signature_fields
       [amount, currency, public_key, order_id, type, description, status, transaction_id, sender_phone]
     end
 
-  private
+    private
+
     def decode!
-      if signature != @request_signature
-        raise Liqpay::InvalidResponse
-      end
+      raise Liqpay::InvalidResponse if signature != @request_signature
     end
   end
 end
