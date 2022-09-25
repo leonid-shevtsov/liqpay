@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'base64'
-require 'liqpay/base_operation'
+require 'liqpay/signed_payload'
 
 module Liqpay
   # Represents a response from the LiqPay API.
@@ -12,6 +12,8 @@ module Liqpay
     %w[public_key order_id description type].each do |attr|
       attr_reader attr
     end
+
+    attr_reader :data
 
     # Amount of payment. MUST match the requested amount
     attr_reader :amount
@@ -31,8 +33,11 @@ module Liqpay
     def initialize(params = {}, options = {})
       super(options)
 
+      @data = params['data']
+      parsed_data = JSON.parse(Base64.strict_decode64(data))
+
       ATTRIBUTES.each do |attribute|
-        instance_variable_set "@#{attribute}", params[attribute]
+        instance_variable_set "@#{attribute}", parsed_data[attribute]
       end
       @request_signature = params['signature']
 
@@ -42,10 +47,6 @@ module Liqpay
     # Returns true, if the transaction was successful
     def success?
       SUCCESS_STATUSES.include? status
-    end
-
-    def signature_fields
-      [amount, currency, public_key, order_id, type, description, status, transaction_id, sender_phone]
     end
 
     private

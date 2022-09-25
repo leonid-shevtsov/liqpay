@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 require 'base64'
-require 'liqpay/base_operation'
+require 'liqpay/signed_payload'
 
 module Liqpay
   # Represends a request to the LiqPay API
   class Request < SignedPayload
-    SIGNATURE_FIELDS = %i[amount currency public_key order_id type description result_url server_url].freeze
-    REQUEST_FIELDS = (SIGNATURE_FIELDS +  %i[language sandbox]).freeze
-    FORM_FIELDS = (REQUEST_FIELDS + %i[signature]).freeze
+    REQUIRED_FIELDS = %i[public_key amount currency description order_id action].freeze
+    OPTIONAL_FIELDS = %i[result_url server_url].freeze
+    REQUEST_FIELDS = (REQUIRED_FIELDS + OPTIONAL_FIELDS + %i[version]).freeze
 
     # REQUIRED Amount of payment (Float), in :currency
     attr_accessor :amount
@@ -16,34 +16,41 @@ module Liqpay
     attr_accessor :currency
     # REQUIRED Description to be displayed to the user
     attr_accessor :description
-    # RECOMMENDED Arbitrary but unique ID (May be REQUIRED by LiqPay configuration)
+    # REQUIRED Arbitrary but unique ID
     attr_accessor :order_id
+    # REQUIRED  = either Liqpay::ACTION_PAY or Liqpay::ACTION_DONATE
+    attr_accessor :action
     # RECOMMENDED URL that the user will be redirected to after payment
     attr_accessor :result_url
     # RECOMMENDED URL that'll receive the order details in the background.
     attr_accessor :server_url
-    # OPTIONAL type of payment = either `buy` (the default) or `donate`
-    attr_accessor :type
-    # OPTIONAL UI language - `ru` or `en`
-    attr_accessor :language
-    # OPTIONAL test mode (1 - ON)
-    attr_accessor :sandbox
 
     def initialize(options = {})
       super(options)
 
-      REQUEST_FIELDS.each { |field| send("#{field}=", options[field]) }
+      (REQUIRED_FIELDS + OPTIONAL_FIELDS).each { |field| send("#{field}=", options[field]) }
+      @action ||= Liqpay::ACTION_PAY
+
       @kamikaze = options[:kamikaze]
     end
 
-    def signature_fields
-      SIGNATURE_FIELDS.map { |field| send(field) }
+    def version
+      Liqpay::LIQPAY_API_VERSION
+    end
+
+    def data
+      json_data = REQUEST_FIELDS
+                  .map { |field| [field, send(field)] }
+                  .to_h
+                  .reject { |_k, v| v.nil? }
+                  .transform_values(&:to_s)
+      puts JSON.dump(json_data)
+      @data ||= Base64.strict_encode64(JSON.dump(json_data)).strip
     end
 
     def form_fields
       validate! unless @kamikaze
-
-      FORM_FIELDS.map { |field| [field, send(field)] }.to_h.reject { |_k, v| v.nil? }
+      { data: data, signature: signature }
     end
 
     private
@@ -55,7 +62,7 @@ module Liqpay
     end
 
     def validate_required_fields!
-      %w[public_key amount currency description].each do |required_field|
+      REQUIRED_FIELDS.each do |required_field|
         raise Liqpay::Exception, "#{required_field} is a required field" unless send(required_field).to_s != ''
       end
     end

@@ -16,17 +16,17 @@ module Liqpay
     end
 
     def signature
-      @signature ||= sign(signature_fields)
+      @signature ||= sign(data)
     end
 
-    def signature_fields
+    def data
       raise NotImplementedError
     end
 
     private
 
-    def sign(fields)
-      Base64.encode64(Digest::SHA1.digest(@private_key + fields.join(''))).strip
+    def sign(data)
+      Base64.strict_encode64(Digest::SHA1.digest(@private_key + data + @private_key)).strip
     end
   end
 end

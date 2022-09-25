@@ -1,24 +1,22 @@
 # LiqPAY
 
-<a href='https://ko-fi.com/X8X19BQH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/BMC-btn-logo.svg) Пригостіть кавою, якщо цей гем для вас є корисним.](https://www.buymeacoffee.com/leonidshevtsov)
 
-This Ruby gem implements the [LiqPAY](https://www.liqpay.com) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.com/doc).
-
-**Users of version 0.1.2 and earlier:** your version of the gem uses the older, deprecated LiqPAY API; you should migrate to >v1, but it requires you to change configuration and set up a server callback endpoint, so it's not a trivial upgrade.
+This Ruby gem implements the [LiqPAY](https://www.liqpay.ua) billing system API, as described in [the LiqPAY documentation](https://www.liqpay.ua/documentation/api/aquiring).
 
 ## Demo
 
-There is a demo app at http://liqpay-demo.herokuapp.com, source at https://github.com/leonid-shevtsov/liqpay_demo
+There is a demo app source at https://github.com/leonid-shevtsov/liqpay_demo. Heroku removed free app hosting, so no more online demo. Also, Liqpay eventually blocks such usage of keys, so it won't survive for long.
 
 ## Installation
 
 Include the [liqpay gem](https://rubygems.org/gems/liqpay) in your `Gemfile`:
 
 ```ruby
-gem 'liqpay', '~>1.0.0'
+gem 'liqpay', '~>2.0.0'
 ```
 
-The gem requries at least Ruby 1.9.
+The gem requires at least Ruby 2.7.
 
 ## Configuration
 
@@ -26,7 +24,7 @@ You can provide all of the payment options in the request object, but the recomm
 your initializers.
 
 You should supply the `public_key` and `private_key` options, that are
-provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.com/admin/business):
+provided by LiqPAY when you sign up and create a shop on the [shops page](https://www.liqpay.ua/uk/adminbusiness):
 
 ```ruby
 # config/initializers/liqpay.rb
@@ -53,7 +51,7 @@ Liqpay.default_options = {
 
 6.  If the payment was cancelled: You cancel the operation.
 
-The most recent version of the LiqPAY API _requires_ you to have a serverside endpoint, which makes it impossible to test it with a local address.
+The most recent version of the LiqPAY API _requires_ you to have a serverside endpoint, which makes it impossible to test it with a local address. Use [ngrok](https://ngrok.com) for local testing.
 
 ### Implementation in Rails
 
@@ -138,10 +136,10 @@ That's about it.
 
 ### Security considerations
 
-* Check that amount from response matches the expected amount;
-* check that the order id is valid;
-* check that the order isn't completed yet (to avoid replay attacks);
+- Check that amount from response matches the expected amount;
+- check that the order id is valid;
+- check that the order isn't completed yet (to avoid replay attacks);
 
 ---
 
-Ruby implementation (c) 2012-2014 Leonid Shevtsov
+Ruby implementation (c) 2012-2022 Leonid Shevtsov
